@@ -1,5 +1,6 @@
 import os
 import pickle
+import json
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -29,8 +30,15 @@ TA_COURSE_TABLE = {
 def get_gmail_service():
     creds = None
     token_path = "token.pickle"
-    credentials_path = "oauth_credentials.json"
+    
+    # 從環境變數讀取 oauth_credentials.json 的內容
+    oauth_credentials_json = os.getenv("OAUTH_CREDENTIALS_JSON_PATH")
+    if oauth_credentials_json is None:
+        raise ValueError("未設置 OAUTH_CREDENTIALS_JSON_PATH 環境變數")
 
+    credentials_info = json.loads(oauth_credentials_json)  # 解析 JSON 字串
+
+    # 嘗試讀取現有的 token.pickle 檔案
     if os.path.exists(token_path):
         with open(token_path, "rb") as token:
             creds = pickle.load(token)
@@ -45,16 +53,16 @@ def get_gmail_service():
             print("刷新 token 失敗，嘗試重新登入。錯誤：", e)
             creds = None
 
+    # 如果憑證無效，進行 OAuth 2.0 認證流程
     if not creds or not creds.valid:
-        if not os.path.exists(credentials_path):
-            raise FileNotFoundError(f"找不到 {credentials_path}，請確保檔案存在")
-        flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
-        creds = flow.run_local_server(port=0)
+        flow = InstalledAppFlow.from_client_config(credentials_info, SCOPES)  # 使用解析的 credentials_info
+        creds = flow.run_local_server(port=0)  # 此步驟會引導用戶進行 Google 登入
         with open(token_path, "wb") as token:
-            pickle.dump(creds, token)
+            pickle.dump(creds, token)  # 儲存憑證
 
     return build("gmail", "v1", credentials=creds)
 
+# 以下是你原本的功能代碼，保持不變
 def list_labels():
     service = get_gmail_service()
     results = service.users().labels().list(userId="me").execute()
