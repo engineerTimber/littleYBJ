@@ -55,8 +55,9 @@ def get_gmail_service():
 
     # 如果憑證無效，進行 OAuth 2.0 認證流程
     if not creds or not creds.valid:
+        # 使用 run_console() 讓用戶在命令行中輸入驗證碼
         flow = InstalledAppFlow.from_client_config(credentials_info, SCOPES)  # 使用解析的 credentials_info
-        creds = flow.run_local_server(port=0)  # 此步驟會引導用戶進行 Google 登入
+        creds = flow.run_console()  # 此步驟會引導用戶進行 Google 登入並在命令行中輸入驗證碼
         with open(token_path, "wb") as token:
             pickle.dump(creds, token)  # 儲存憑證
 
