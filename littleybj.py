@@ -53,8 +53,6 @@ personal_timers = {
 }
 
 async def set_timers():
-    print("NOTION_API_KEY exists:", bool(os.environ.get("NOTION_API_KEY")))
-    print("NOTION_DATABASE_ID exists:", bool(os.environ.get("NOTION_DATABASE_ID")))
     mail_timers["mail_timer1"].hour = get_data("Name", "mail_timer1", "hour", "number")
     mail_timers["mail_timer1"].minute = get_data("Name", "mail_timer1", "minute", "number")
     mail_timers["mail_timer2"].hour = get_data("Name", "mail_timer2", "hour", "number")
@@ -359,8 +357,8 @@ async def on_ready():
     print(f"目前登入身份 --> {bot.user}")
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
     await channel.send("LittleYBJ 已啟動！")
-    if not check_email_task.is_running():  # 確保 task 只會啟動一次
-        check_email_task.start()
+    if not check_timer_task.is_running():  # 確保 task 只會啟動一次
+        check_timer_task.start()
 
 user_commands = ["help", "哈囉", "嗨", "信", "課程信件", "設定鬧鐘", "刪除鬧鐘", "鬧鐘", "靈感", "idea", "刪除靈感"]
 
@@ -573,20 +571,36 @@ async def delete_idea(channel):
     view = IdeaDeleteView()
     await channel.send("請選擇要刪除的靈感", view=view)
 
+last_run_time = None  # 紀錄上次執行的時間
+
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_email_task():
+    global last_run_time
     now = datetime.datetime.now()
+
+    # 檢查是否達到足夠的時間間隔（例如，每10分鐘執行一次）
+    if last_run_time and (now - last_run_time).total_seconds() < 40: # 40秒內不執行
+        return  # 如果距離上次執行不夠，則不再執行
+
+    last_run_time = now  # 更新上次執行時間
+
+    # 檢查郵件
     channel = bot.get_channel(MAIL_CHANNEL_ID)
     for timer in mail_timers.values():
         if now.hour == timer.hour and now.minute == timer.minute:
             if channel:
                 await check_email(channel=channel)
+
+    # 檢查鬧鐘
     channel = bot.get_channel(TIMER_CHANNEL_ID)
     for timer in personal_timers.values():
         if now.hour == timer.hour and now.minute == timer.minute:
             if channel:
                 YBJ = await bot.fetch_user(YBJ_ID)
                 await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
+
+    # 加入延遲，讓下一次檢查至少過一段時間
+    await asyncio.sleep(10)  # 延遲 10 秒再開始下一輪檢查
 
 # 記錄上次讀取到的最新信件主旨
 last_course_subject = get_data("Name", "last_course_subject", "content", "rich_text")
