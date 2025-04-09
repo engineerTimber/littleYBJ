@@ -53,9 +53,8 @@ personal_timers = {
 }
 
 async def set_timers():
-    print("DEBUG")
-    print("NOTION_API_KEY:", NOTION_API_KEY)
-    print("NOTION_DATABASE_ID:", NOTION_DATABASE_ID)
+    print("NOTION_API_KEY exists:", bool(os.environ.get("NOTION_API_KEY")))
+    print("NOTION_DATABASE_ID exists:", bool(os.environ.get("NOTION_DATABASE_ID")))
     mail_timers["mail_timer1"].hour = get_data("Name", "mail_timer1", "hour", "number")
     mail_timers["mail_timer1"].minute = get_data("Name", "mail_timer1", "minute", "number")
     mail_timers["mail_timer2"].hour = get_data("Name", "mail_timer2", "hour", "number")
