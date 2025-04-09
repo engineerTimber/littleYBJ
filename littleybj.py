@@ -574,7 +574,7 @@ async def delete_idea(channel):
 last_run_time = None  # 紀錄上次執行的時間
 
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
-async def check_email_task():
+async def check_timer_task():
     global last_run_time
     now = datetime.datetime.now()
 
