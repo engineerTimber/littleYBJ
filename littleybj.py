@@ -24,11 +24,6 @@ LILTLEYBJ_KEY = os.getenv("LILTLEYBJ_KEY")
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 
-# 檢查環境變數是否存在
-print("LILTLEYBJ_KEY:", LILTLEYBJ_KEY)
-print("NOTION_API_KEY:", NOTION_API_KEY)
-print("NOTION_DATABASE_ID:", NOTION_DATABASE_ID)
-
 # intents是要求機器人的權限
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = "&", intents = intents)
@@ -58,6 +53,9 @@ personal_timers = {
 }
 
 async def set_timers():
+    print("DEBUG")
+    print("NOTION_API_KEY:", NOTION_API_KEY)
+    print("NOTION_DATABASE_ID:", NOTION_DATABASE_ID)
     mail_timers["mail_timer1"].hour = get_data("Name", "mail_timer1", "hour", "number")
     mail_timers["mail_timer1"].minute = get_data("Name", "mail_timer1", "minute", "number")
     mail_timers["mail_timer2"].hour = get_data("Name", "mail_timer2", "hour", "number")
