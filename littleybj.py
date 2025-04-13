@@ -616,9 +616,6 @@ async def check_timer_task():
                 YBJ = await bot.fetch_user(YBJ_ID)
                 await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
-    # 加入延遲，讓下一次檢查至少過一段時間
-    await asyncio.sleep(10)  # 延遲 10 秒再開始下一輪檢查
-
 # 記錄上次讀取到的最新信件主旨
 last_course_subject = get_data("Name", "last_course_subject", "content", "rich_text")
 last_school_subject = get_data("Name", "last_school_subject", "content", "rich_text")
