@@ -26,7 +26,6 @@ LILTLEYBJ_KEY = os.getenv("LILTLEYBJ_KEY")
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 
-'''
 # intents是要求機器人的權限
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = "&", intents = intents)
@@ -360,7 +359,7 @@ async def on_ready():
     print(f"目前登入身份 --> {bot.user}")
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
     await channel.send("LittleYBJ 已啟動！")
-    time.sleep(60)  # 等待 60 秒，讓所有頻道和成員都載入完成
+    time.sleep(10)  # 等待 10 秒，讓所有頻道和成員都載入完成
     if not check_timer_task.is_running():  # 確保 task 只會啟動一次
         check_timer_task.start()
         return
@@ -606,7 +605,7 @@ async def check_timer_task():
                 await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
     # 加入延遲，讓下一次檢查至少過一段時間
-    await asyncio.sleep(40)  # 延遲 10 秒再開始下一輪檢查
+    await asyncio.sleep(10)  # 延遲 10 秒再開始下一輪檢查
 
 # 記錄上次讀取到的最新信件主旨
 last_course_subject = get_data("Name", "last_course_subject", "content", "rich_text")
@@ -617,16 +616,5 @@ asyncio.run(init())
 print("初始化完成")
 
 print("延遲啟動，防止 rate limit...")
-time.sleep(60)
+time.sleep(10)
 bot.run(LILTLEYBJ_KEY)
-'''
-
-intents = discord.Intents.default()
-
-client = discord.Client(intents=intents)
-
-@client.event
-async def on_ready():
-    print(f'Logged in as {client.user}')
-
-client.run(LILTLEYBJ_KEY)
