@@ -8,9 +8,21 @@ import requests
 import aiohttp
 import asyncio
 import datetime
+import threading
+from flask import Flask
 from dataclasses import dataclass
 from gmail_api import search_emails
 
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return "LittleYBJ is running!"
+
+def run_web():
+    app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_web).start()
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 MAIL_CHANNEL_ID = 1351939144531574867
