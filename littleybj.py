@@ -596,6 +596,7 @@ async def delete_idea(channel):
 
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_timer_task():
+    print("check timers")
     global last_run_time
     now = datetime.datetime.now()
 
