@@ -107,14 +107,15 @@ def search_course_emails(num_emails=10):
                 from_ = decode_mime_words(msg.get("From"))
                 date = msg.get("Date")
 
-                if keyword in subject or keyword in from_:
-                    course_name = TA_COURSE_TABLE.get(from_, "未知QQ")
-                    matching_emails.append({
-                        "From": from_,
-                        "Subject": subject,
-                        "Date": date,
-                        "Course": course_name
-                    })
+                for name, course in TA_COURSE_TABLE.items():
+                    if name in from_:
+                        matching_emails.append({
+                            "From": from_,
+                            "Subject": subject,
+                            "Date": date,
+                            "Course": course
+                        })
+                        break  # 找到就跳出
 
             except Exception as e:
                 print(f"❌ 處理信件 ID {eid} 時發生錯誤：{e}")
