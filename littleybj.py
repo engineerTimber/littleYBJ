@@ -8,7 +8,7 @@ import aiohttp
 import asyncio
 import datetime
 from dataclasses import dataclass
-from gmail_api import check_email_for_keyword
+from gmail_api import search_emails
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 MAIL_CHANNEL_ID = 1351939144531574867
@@ -477,12 +477,13 @@ async def list_channels(ctx):
 
 async def check_email(channel, *keywords):
     global last_course_subject, last_school_subject
-    no_new_email = True
+    no_new_course_email = True
+    no_new_school_email = True
     no_other_email = True
 
     if keywords:
         for keyword in keywords:
-            emails = check_email_for_keyword(keyword, 30)
+            emails = search_emails(keyword, 30)
             if emails:
                 response = f"## <近30封符合 `{keyword}` 的郵件>\n"
                 for email in emails:
@@ -492,41 +493,49 @@ async def check_email(channel, *keywords):
                 await channel.send(f"🔍 找不到近30封符合 `{keyword}` 的郵件。")
         return
 
-    emails = check_email_for_keyword("/")
+    # 課程郵件處理
+    emails = search_emails("/", 30)
     if emails:
-        latest_email = emails[0]
-        if latest_email["Subject"] != last_course_subject:
-            no_new_email = False
-            last_course_subject = latest_email["Subject"]
-            await update_db_mail("last_course_subject", last_course_subject)
-            response = f"## <課程郵件通知>\n"
-            for email in emails:
-                if "Course" in email:
-                    response += f"**📚 課程：**{email['Course']}\n**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
-                else:
-                    response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
-            await channel.send(response)
-
-    emails = check_email_for_keyword("陽明交通大學")
-    if emails:
-        latest_email = emails[0]
-        if latest_email["Subject"] != last_school_subject:
-            no_new_email = False
-            last_school_subject = latest_email["Subject"]
-            await update_db_mail("last_school_subject", last_school_subject)
-            response = f"## <學校相關郵件通知>\n"
-            for email in emails:
+        response = f"## <課程郵件通知>\n"
+        for email in emails:
+            if email["Subject"] != last_course_subject:
+                if no_new_course_email:
+                    no_new_course_email = False
+                    last_course_subject = email["Subject"]
+                    await update_db_mail("last_course_subject", last_course_subject)
                 response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
+            else:
+                break
+
+        if not no_new_course_email:
             await channel.send(response)
 
+    # 學校郵件處理
+    emails = search_emails("陽明交通大學", 30)
+    if emails:
+        response = f"## <學校相關郵件通知>\n"
+        for email in emails:
+            if email["Subject"] != last_school_subject:
+                if no_new_school_email:
+                    no_new_school_email = False
+                    last_school_subject = email["Subject"]
+                    await update_db_mail("last_school_subject", last_school_subject)
+                response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
+            else:
+                break
+
+        if not no_new_school_email:
+            await channel.send(response)
+
+    # 其他郵件處理
     response = f"## <其他郵件通知>\n"
-    emails = check_email_for_keyword("蝦皮")
+    emails = search_emails("蝦皮", 30)
     if emails:
         no_other_email = False
         no_new_email = False
         for email in emails:
             response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
-    emails = check_email_for_keyword("物理")
+    emails = search_emails("物理", 30)
     if emails:
         no_other_email = False
         no_new_email = False
@@ -539,7 +548,7 @@ async def check_email(channel, *keywords):
         await channel.send("📭 目前沒有新郵件！")
 
 async def check_course_email(channel):
-    emails = check_email_for_keyword("/", 40)
+    emails = search_emails("/", 40)
     if emails:
         response = f"## <近期課程郵件通知>\n"
         for email in emails:

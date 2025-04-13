@@ -1,6 +1,4 @@
 # .gitignore
-oauth_credentials.json
-token.pickle
 __pycache__/
 *.pyc
 .vscode/
