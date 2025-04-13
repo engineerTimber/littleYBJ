@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from discord.ui import Button, View, Select, Modal, TextInput
 import os
+import time
 import dotenv
 import requests
 import aiohttp
@@ -357,6 +358,7 @@ async def on_ready():
     print(f"目前登入身份 --> {bot.user}")
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
     await channel.send("LittleYBJ 已啟動！")
+    time.sleep(60)  # 等待 60 秒，讓所有頻道和成員都載入完成
     if not check_timer_task.is_running():  # 確保 task 只會啟動一次
         check_timer_task.start()
         return
@@ -581,18 +583,10 @@ async def delete_idea(channel):
     view = IdeaDeleteView()
     await channel.send("請選擇要刪除的靈感", view=view)
 
-last_run_time = None  # 紀錄上次執行的時間
-
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_timer_task():
     global last_run_time
     now = datetime.datetime.now()
-
-    # 檢查是否達到足夠的時間間隔（例如，每10分鐘執行一次）
-    if last_run_time and (now - last_run_time).total_seconds() < 40: # 40秒內不執行
-        return  # 如果距離上次執行不夠，則不再執行
-
-    last_run_time = now  # 更新上次執行時間
 
     # 檢查郵件
     channel = bot.get_channel(MAIL_CHANNEL_ID)
@@ -610,7 +604,7 @@ async def check_timer_task():
                 await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
     # 加入延遲，讓下一次檢查至少過一段時間
-    await asyncio.sleep(10)  # 延遲 10 秒再開始下一輪檢查
+    await asyncio.sleep(40)  # 延遲 10 秒再開始下一輪檢查
 
 # 記錄上次讀取到的最新信件主旨
 last_course_subject = get_data("Name", "last_course_subject", "content", "rich_text")
@@ -619,4 +613,7 @@ last_school_subject = get_data("Name", "last_school_subject", "content", "rich_t
 print("正在初始化...")
 asyncio.run(init())
 print("初始化完成")
+
+print("延遲啟動，防止 rate limit...")
+time.sleep(60)
 bot.run(LILTLEYBJ_KEY)
