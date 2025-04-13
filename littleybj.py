@@ -360,7 +360,7 @@ async def on_ready():
     await channel.send("LittleYBJ 已啟動！")
     time.sleep(60)  # 等待 60 秒，讓所有頻道和成員都載入完成
     if not check_timer_task.is_running():  # 確保 task 只會啟動一次
-        check_timer_task.start()
+        # check_timer_task.start()
         return
 
 user_commands = ["help", "哈囉", "嗨", "信", "課程信件", "設定鬧鐘", "刪除鬧鐘", "鬧鐘", "靈感", "idea", "刪除靈感"]
