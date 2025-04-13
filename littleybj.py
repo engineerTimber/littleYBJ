@@ -11,6 +11,7 @@ import datetime
 from dataclasses import dataclass
 from gmail_api import search_emails
 
+
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
 MAIL_CHANNEL_ID = 1351939144531574867
 TIMER_CHANNEL_ID = 1353369453567676426
@@ -25,6 +26,7 @@ LILTLEYBJ_KEY = os.getenv("LILTLEYBJ_KEY")
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 NOTION_DATABASE_ID = os.getenv("NOTION_DATABASE_ID")
 
+'''
 # intents是要求機器人的權限
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix = "&", intents = intents)
@@ -360,7 +362,7 @@ async def on_ready():
     await channel.send("LittleYBJ 已啟動！")
     time.sleep(60)  # 等待 60 秒，讓所有頻道和成員都載入完成
     if not check_timer_task.is_running():  # 確保 task 只會啟動一次
-        # check_timer_task.start()
+        check_timer_task.start()
         return
 
 user_commands = ["help", "哈囉", "嗨", "信", "課程信件", "設定鬧鐘", "刪除鬧鐘", "鬧鐘", "靈感", "idea", "刪除靈感"]
@@ -617,3 +619,14 @@ print("初始化完成")
 print("延遲啟動，防止 rate limit...")
 time.sleep(60)
 bot.run(LILTLEYBJ_KEY)
+'''
+
+intents = discord.Intents.default()
+
+client = discord.Client(intents=intents)
+
+@client.event
+async def on_ready():
+    print(f'Logged in as {client.user}')
+
+client.run(LILTLEYBJ_KEY)
