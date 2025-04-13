@@ -11,7 +11,7 @@ import datetime
 import threading
 from flask import Flask
 from dataclasses import dataclass
-from gmail_api import search_emails
+from gmail_api import search_emails, search_course_emails
 
 # 騙過Render用的Flask(防止Render一直重新部署)，實際上bot用不到
 app = Flask(__name__)
@@ -510,7 +510,7 @@ async def check_email(channel, *keywords):
         return
 
     # 課程郵件處理
-    emails = search_emails("/", 30)
+    emails = search_course_emails(30)
     if emails:
         response = f"## <課程郵件通知>\n"
         for email in emails:
@@ -519,7 +519,7 @@ async def check_email(channel, *keywords):
                     no_new_course_email = False
                     last_course_subject = email["Subject"]
                     await update_db_mail("last_course_subject", last_course_subject)
-                response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
+                response += f"**📩 課程：**{email['Course']}\n**📌 主旨：**{email['Subject']}\n\n"
             else:
                 break
 
@@ -564,14 +564,11 @@ async def check_email(channel, *keywords):
         await channel.send("📭 目前沒有新郵件！")
 
 async def check_course_email(channel):
-    emails = search_emails("/", 40)
+    emails = search_course_emails(40)
     if emails:
         response = f"## <近期課程郵件通知>\n"
         for email in emails:
-            if "Course" in email:
-                response += f"**📚 課程：**{email['Course']}\n**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
-            else:
-                response += f"**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
+            response += f"**📚 課程：**{email['Course']}\n**📩 寄件人：**{email['From']}\n**📌 主旨：**{email['Subject']}\n\n"
         await channel.send(response)
     else:
         await channel.send("🔍 近期無課程郵件。")
