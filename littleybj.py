@@ -13,6 +13,7 @@ from flask import Flask
 from dataclasses import dataclass
 from gmail_api import search_emails
 
+# 騙過Render用的Flask(防止Render一直重新部署)，實際上bot用不到
 app = Flask(__name__)
 
 @app.route("/")
