@@ -377,7 +377,7 @@ async def on_ready():
         check_timer_task.start()
         return
 
-user_commands = ["help", "哈囉", "嗨", "信", "課程信件", "設定鬧鐘", "刪除鬧鐘", "鬧鐘", "靈感", "idea", "刪除靈感"]
+user_commands = ["help", "哈囉", "嗨", "信", "課程信件", "設定鬧鐘", "刪除鬧鐘", "鬧鐘", "靈感", "idea", "刪除靈感", "test"]
 
 @bot.event
 async def on_message(message):
@@ -469,6 +469,9 @@ async def on_message(message):
                 response += "..."
             response += f"\n"
         await channel.send(response)
+    elif "test" in message.content:
+        for key in mail_timers.keys() | personal_timers.keys():
+            print(f"🔔 {key} - {mail_timers[key].hour:02d}:{mail_timers[key].minute:02d}")
 
     await bot.process_commands(message)  # 確保指令仍然可用
 
