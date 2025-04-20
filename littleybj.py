@@ -599,8 +599,8 @@ async def delete_idea(channel):
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_timer_task():
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
-    await channel.send("🔄 檢查鬧鐘...")
     now = datetime.datetime.now()
+    await channel.send("🔄 檢查鬧鐘 (", now.time)
 
     # 檢查郵件
     channel = bot.get_channel(MAIL_CHANNEL_ID)
@@ -612,6 +612,7 @@ async def check_timer_task():
     # 檢查鬧鐘
     channel = bot.get_channel(TIMER_CHANNEL_ID)
     for timer in personal_timers.values():
+        await channel.send("check ", timer.content)
         if now.hour == timer.hour and now.minute == timer.minute:
             if channel:
                 YBJ = await bot.fetch_user(YBJ_ID)
