@@ -470,8 +470,7 @@ async def on_message(message):
             response += f"\n"
         await channel.send(response)
     elif "test" in message.content:
-        for key in mail_timers.keys() | personal_timers.keys():
-            print(f"🔔 {key} - {mail_timers[key].hour:02d}:{mail_timers[key].minute:02d}")
+        print("test")
 
     await bot.process_commands(message)  # 確保指令仍然可用
 
@@ -599,8 +598,8 @@ async def delete_idea(channel):
 
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_timer_task():
-    print("check timers")
-    global last_run_time
+    channel = bot.get_channel(SYSTEM_CHANNEL_ID)
+    await channel.send("🔄 檢查鬧鐘...")
     now = datetime.datetime.now()
 
     # 檢查郵件
