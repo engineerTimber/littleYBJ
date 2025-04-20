@@ -601,7 +601,6 @@ async def delete_idea(channel):
 async def check_timer_task():
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
     now = datetime.datetime.now(ZoneInfo("Asia/Taipei"))  # 使用台北時間，避免Render所在時區不同
-    await channel.send(f"🔄 檢查鬧鐘 ({now.time()})")
 
     # 檢查郵件
     channel = bot.get_channel(MAIL_CHANNEL_ID)
@@ -613,11 +612,7 @@ async def check_timer_task():
     # 檢查鬧鐘
     channel = bot.get_channel(TIMER_CHANNEL_ID)
     for timer in personal_timers.values():
-        channel = bot.get_channel(SYSTEM_CHANNEL_ID)
-        await channel.send(f"check {timer.content}->{timer.hour}:{timer.minute}")
-        await channel.send(f"time now ->{now.hour}:{now.minute}")
         if now.hour == timer.hour and now.minute == timer.minute:
-            await channel.send(f"YAAAAY! 鬧鐘響了!")
             YBJ = await bot.fetch_user(YBJ_ID)
             await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
