@@ -612,9 +612,11 @@ async def check_timer_task():
     # 檢查鬧鐘
     channel = bot.get_channel(TIMER_CHANNEL_ID)
     for timer in personal_timers.values():
-        await channel.send(f"check {timer.content}")
+        channel = bot.get_channel(SYSTEM_CHANNEL_ID)
+        await channel.send(f"check {timer.content}->{timer.hour}:{timer.minute}")
         if now.hour == timer.hour and now.minute == timer.minute:
             if channel:
+                await channel.send(f"⏰ 鬧鐘提醒 {timer.content}： **{timer.content}**！")
                 YBJ = await bot.fetch_user(YBJ_ID)
                 await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
