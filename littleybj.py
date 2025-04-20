@@ -614,11 +614,11 @@ async def check_timer_task():
     for timer in personal_timers.values():
         channel = bot.get_channel(SYSTEM_CHANNEL_ID)
         await channel.send(f"check {timer.content}->{timer.hour}:{timer.minute}")
+        await channel.send(f"time now ->{now.hour}:{now.minute}")
         if now.hour == timer.hour and now.minute == timer.minute:
-            if channel:
-                await channel.send(f"⏰ 鬧鐘提醒 {timer.content}： **{timer.content}**！")
-                YBJ = await bot.fetch_user(YBJ_ID)
-                await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
+            await channel.send(f"YAAAAY! 鬧鐘響了!")
+            YBJ = await bot.fetch_user(YBJ_ID)
+            await channel.send(f"⏰ 鬧鐘提醒 {YBJ.mention}： **{timer.content}**！")
 
 # 記錄上次讀取到的最新信件主旨
 last_course_subject = get_data("Name", "last_course_subject", "content", "rich_text")
