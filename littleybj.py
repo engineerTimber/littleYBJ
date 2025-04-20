@@ -8,6 +8,7 @@ import requests
 import aiohttp
 import asyncio
 import datetime
+from zoneinfo import ZoneInfo
 import threading
 from flask import Flask
 from dataclasses import dataclass
@@ -599,7 +600,7 @@ async def delete_idea(channel):
 @tasks.loop(minutes=1)  # 每分鐘檢查一次是否到達設定時間
 async def check_timer_task():
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(ZoneInfo("Asia/Taipei"))  # 使用台北時間，避免Render所在時區不同
     await channel.send(f"🔄 檢查鬧鐘 ({now.time()})")
 
     # 檢查郵件
