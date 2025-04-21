@@ -601,7 +601,7 @@ async def delete_idea(channel):
 async def check_timer_task():
     channel = bot.get_channel(SYSTEM_CHANNEL_ID)
     now = datetime.datetime.now(ZoneInfo("Asia/Taipei"))  # 使用台北時間，避免Render所在時區不同
-    await channel.send(f"目前時間：{now.hour}:{now.minute}")
+    # await channel.send(f"目前時間：{now.hour}:{now.minute}")
 
     # 檢查郵件
     channel = bot.get_channel(MAIL_CHANNEL_ID)
